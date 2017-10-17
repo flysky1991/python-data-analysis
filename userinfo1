@@ -1,0 +1,53 @@
+# -*- coding: utf-8 -*-
+"""
+Created on Tue Oct 17 19:28:21 2017
+
+@author: Administrator
+"""
+'''
+功能：本段代码主要功能是读取一个文件目录下若干个txt文件中的json格式数据，
+      并将该数据写入mysql数据库中（共有100017行数据）
+'''
+
+
+import json
+import pymysql.cursors
+
+for i in range(10):
+    with open('C:/Users/Administrator/Desktop/data/data'+str(i)+'.txt', encoding='utf-8') as file:
+        lines = file.readlines()
+        for line in lines:
+            data = json.loads(line)
+            print(data)
+            #print(data)
+            age = data['age']
+            name = data['name']
+            email = data['email']
+            id = data['id']
+            
+            '''
+            数据库操作
+            '''
+            
+            #获取数据库链接
+            connection  = pymysql.connect(host = 'localhost',
+                                          user = 'root',
+                                          password = '123456',
+                                          db = 'eigen',
+                                          charset = 'utf8mb4')
+            try:
+                #获取会话指针
+                with connection.cursor() as cursor:
+                    #创建sql语句
+                    sql = "insert into `userinfo1` (`id`,`age`,`name`,`email`) values (%s,%s,%s,%s)"
+                    
+                    #执行sql语句
+                    cursor.execute(sql,(id,age,name,email))
+                    
+                    #提交数据库
+                    connection.commit()
+            finally:
+                connection.close()
+                
+        file.close()
+        
